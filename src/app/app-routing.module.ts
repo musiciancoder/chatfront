@@ -4,7 +4,7 @@ import {ChatComponent} from './chat/chat.component';
 
 const routes: Routes = [   //<router-outlet> en app.component.html renderiza las rutas
   {path: '',redirectTo:'chat', pathMatch: 'full'}, //para que por defecto redirija a chat
-  {path: 'chat', component: ChatComponent} //componente normal
+  {path: 'chat', component: ChatComponent} //componente normalgit
 ];
 
 @NgModule({

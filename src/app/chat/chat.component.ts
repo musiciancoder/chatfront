@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Client} from '@stomp/stompjs';
 import * as SockJS from 'sockjs-client';
+import {Mensaje} from './models/mensaje';
 
 @Component({
   selector: 'app-chat',
@@ -8,8 +9,12 @@ import * as SockJS from 'sockjs-client';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit {
+
   private client: Client; //con esto nos conectamos, nos subscribimos a los eventos, etc.. trabajamos con el chat
   conectado: boolean = false;
+  mensaje: Mensaje = new Mensaje();
+  mensajes: Mensaje[] =[];
+
   constructor() { }
 
   ngOnInit(): void {
@@ -22,6 +27,14 @@ export class ChatComponent implements OnInit {
     this.client.onConnect = (frame) => {
       console.log('Conectados: ' + this.client.connected + ' : ' + frame);
       this.conectado = true;
+
+      //TODO preguntar si this.client es un Observable
+      this.client.subscribe('/chat/mensaje', evento=>{ //este es el evento cuando alguien escribe algun mensaje en el chat lo escuchemos
+        let mensaje : Mensaje = JSON.parse(evento.body) as Mensaje; //recibimos un evento.body que es un json string, lo estamos pasando a javascript object y luego a mensaje
+        mensaje.fecha = new Date (mensaje.fecha); // mensaje.fecha long que viene del backend
+        this.mensajes.push(mensaje);
+        console.log(mensaje);
+      })
     }
 
     this.client.onDisconnect = (frame) => {
@@ -37,6 +50,12 @@ conectar():void{
 
   desconectar():void{
     this.client.deactivate();
+  }
+
+  //cuando el usuario envía un mensaje
+  enviarMensaje(): void{
+    this.client.publish({destination: '/app/mensaje/', body:JSON.stringify(this.mensaje)});
+    this.mensaje.texto = '';
   }
 
 }

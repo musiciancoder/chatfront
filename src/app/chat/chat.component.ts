@@ -14,6 +14,7 @@ export class ChatComponent implements OnInit {
   conectado: boolean = false;
   mensaje: Mensaje = new Mensaje();
   mensajes: Mensaje[] =[];
+  escribiendo: string;
 
   constructor() { }
 
@@ -40,8 +41,15 @@ export class ChatComponent implements OnInit {
 
         this.mensajes.push(mensaje);
         console.log(mensaje);
-      })
-      this.mensaje.tipo = 'NUEVO_USUARIO';
+      });
+
+      ////para notificar en pantalla que el usuario esta escribiendo
+      this.client.subscribe('/chat/escribiendo', evento=>{
+        this.escribiendo = evento.body;
+        setTimeout(()=> this.escribiendo = '', 3000); //luego de transcurridos 3 seg se borra q el usuario esta escribiendo
+      });
+
+        this.mensaje.tipo = 'NUEVO_USUARIO';
       this.client.publish({destination: '/app/mensaje/', body:JSON.stringify(this.mensaje)});
     }
 
@@ -65,6 +73,11 @@ conectar():void{
     this.mensaje.tipo = 'MENSAJE';
     this.client.publish({destination: '/app/mensaje/', body:JSON.stringify(this.mensaje)});
     this.mensaje.texto = '';
+  }
+
+  //para notificar en pantalla que el usuario esta escribiendo
+  escribiendoEvento():void {
+    this.client.publish({destination: '/app/escribiendo', body: this.mensaje.username});
   }
 
 }

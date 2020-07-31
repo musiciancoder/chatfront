@@ -17,7 +17,7 @@
     </ul>
   </div>
 
-  <div class="card-body" style="overflow-y: scroll; height: 360px;"
+  <div #scrollChat [scrollTop]="scrollChat.scrollHeight" class="card-body" style="overflow-y: scroll; height: 360px;"
        *ngIf="conectado">
     <ul class="list-group list-group-flush">
       <li class="list-group-item list-group-item-light" *ngFor="let mensaje of mensajes">
@@ -37,10 +37,11 @@
     <form class="form-inline">
       <div class="form-group mx-3">
         <input type="text" [(ngModel)]="mensaje.texto" class="form-control" placeholder="Escribe un mensaje"
-               name="texto">
+               name="texto"(keyup)="escribiendoEvento()" >
       </div>
       <button class="btn btn-primary" type="submit" (click)="enviarMensaje()">Enviar</button>
     </form>
+    <div>{{escribiendo}}</div>
   </div>
 </div>
 

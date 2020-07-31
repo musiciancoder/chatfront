@@ -32,6 +32,12 @@ export class ChatComponent implements OnInit {
       this.client.subscribe('/chat/mensaje', evento=>{ //este es el evento cuando alguien escribe algun mensaje en el chat lo escuchemos
         let mensaje : Mensaje = JSON.parse(evento.body) as Mensaje; //recibimos un evento.body que es un json string, lo estamos pasando a javascript object y luego a mensaje
         mensaje.fecha = new Date (mensaje.fecha); // mensaje.fecha long que viene del backend
+
+        if(!this.mensaje.color && mensaje.tipo =='NUEVO_USUARIO' &&
+        this.mensaje.username == mensaje.username){
+          this.mensaje.color = mensaje.color;
+        }
+
         this.mensajes.push(mensaje);
         console.log(mensaje);
       })
